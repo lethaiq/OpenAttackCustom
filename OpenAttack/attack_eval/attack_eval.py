@@ -175,6 +175,8 @@ class AttackEval:
         total_inst = 0
         success_inst = 0
 
+        save_results = []
+
         # Begin for
         for i, res in enumerate(result_iterator):
             total_inst += 1
@@ -227,6 +229,9 @@ class AttackEval:
                     visualizer(i + 1, x_orig, y_orig, x_adv, y_adv, info, tqdm_writer, self.tokenizer)
                 else:
                     visualizer(i + 1, x_orig, y_orig, x_adv, y_adv, info, sys.stdout.write, self.tokenizer)
+
+                save_results.append([x_orig, y_orig, x_adv, y_adv, info])
+
             for kw, val in res["metrics"].items():
                 if val is None:
                     continue
@@ -252,7 +257,8 @@ class AttackEval:
         
         if visualize:
             result_visualizer(summary, sys.stdout.write)
-        return summary
+
+        return save_results, summary
     
     ## TODO generate adversarial samples
     

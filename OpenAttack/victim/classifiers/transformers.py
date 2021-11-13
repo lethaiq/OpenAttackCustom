@@ -66,7 +66,7 @@ class TransformersClassifier(Classifier):
     
     @property
     def tokenizer(self):
-        return TransformersTokenizer(self.__tokenizer, self.__lang_tag)
+        return TransformersTokenizer(self.__tokenizer, self.__lang_tag, max_length=self.max_length)
 
     def to(self, device : torch.device):
         """
@@ -81,9 +81,12 @@ class TransformersClassifier(Classifier):
         return self.get_prob(input_).argmax(axis=1)
 
     def get_prob(self, input_):
-        return self.get_grad([
+        # if hasattr(self.__tokenizer, 'normalizer'):
+        #     input_ = [self.__tokenizer.normalizer.normalize_str(sent) for sent in input_]
+        probs = self.get_grad([
             self.__tokenizer.tokenize(sent) for sent in input_
         ], [0] * len(input_))[0]
+        return probs
 
     def get_grad(self, input_, labels):
         v = self.predict(input_, labels)

@@ -86,7 +86,7 @@ class TextBuggerAttacker(ClassificationAttacker):
             ranked_words = self.get_w_word_importances(x, victim, goal)
         for word_idx in ranked_words:
             word = x[word_idx]
-            if word in self.filter_words:
+            if word.lower() in self.filter_words:
                 continue
             bug = self.selectBug(word, word_idx, x, victim, goal)
             x = self.replaceWithBug(x, word_idx, bug)
@@ -148,7 +148,7 @@ class TextBuggerAttacker(ClassificationAttacker):
         bugs["delete"] = self.bug_delete(word)
         bugs["swap"] = self.bug_swap(word)
         bugs["sub_C"] = self.bug_sub_C(word)
-        bugs["sub_W"] = self.bug_sub_W(word)
+        # bugs["sub_W"] = self.bug_sub_W(word)
         return bugs
 
     def bug_sub_W(self, word):
@@ -160,7 +160,7 @@ class TextBuggerAttacker(ClassificationAttacker):
         except WordNotInDictionaryException:
             return word
 
-    def bug_insert(self, word):
+    def bug_insert(self, word): # edit distance = 1
         if len(word) >= 6:
             return word
         res = word
@@ -168,7 +168,7 @@ class TextBuggerAttacker(ClassificationAttacker):
         res = res[0:point] + " " + res[point:]
         return res
 
-    def bug_delete(self, word):
+    def bug_delete(self, word): # edit distance = 1
         res = word
         point = random.randint(1, len(word) - 2)
         res = res[0:point] + res[point + 1:]
@@ -189,7 +189,7 @@ class TextBuggerAttacker(ClassificationAttacker):
         res = ''.join(res)
         return res
 
-    def bug_sub_C(self, word):
+    def bug_sub_C(self, word): # edit distance = 1
         res = word
         key_neighbors = self.get_key_neighbors()
         point = random.randint(0, len(word) - 1)
